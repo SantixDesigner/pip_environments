@@ -1,21 +1,17 @@
 import csv
-from utils import balance, generate_bar_chart
+import pandas as pd 
+import seaborn as sns
+import matplotlib.pyplot as plt
 def run(path, pais):
-  with open(path, 'r') as csvfile:
-    reader = csv.reader(csvfile, delimiter=',')
-    header = next(reader)
-    dict = {}
+  df = pd.read_csv('world_population.csv')
+  pais_bd = df[df['Country/Territory'] == pais.capitalize()].reset_index()
 
-    for i in reader:
-      if i[2] == pais.capitalize():
-        dict = {key:value for (key,value) in zip(header, i)}
-    if(dict):
-      dict = balance(dict)
-      labels = [key.replace('Population', '') for key in dict.keys()]
-      values = [values for values in dict.values()]
-      generate_bar_chart(labels, values)
-    else:
-      print("No se encuentra el pais")
+  if(len(pais_bd) > 0):
+    pais_bd = pais_bd[['2022 Population','2020 Population', '2015 Population', '2010 Population']].T.reset_index()
+    plt.title(pais.capitalize())
+    plt.bar(x=pais_bd['index'], height=pais_bd[0])
+  else:
+    print("Gualá")
 
 
 if __name__ == '__main__':
